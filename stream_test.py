@@ -17,8 +17,24 @@ def encode_data(df):
 def predict_survival(df):
     try:
         # Only use relevant columns for prediction
-        predictions = model.predict(df[['Age', 'Gender', 'Class', 'Seat_Type', 'Fare_Paid']])
+        required_columns = ['Age', 'Gender', 'Class', 'Seat_Type', 'Fare_Paid']
+        
+        # Make sure the DataFrame has the required columns
+        if not all(col in df.columns for col in required_columns):
+            st.error(f"Missing one or more required columns: {', '.join(required_columns)}")
+            return []
+
+        # Filter the DataFrame to keep only the required columns
+        prediction_data = df[required_columns]
+        
+        # Ensure that there are no missing values
+        prediction_data = prediction_data.fillna(0)
+        
+        # Make predictions
+        predictions = model.predict(prediction_data)
+        
         return ['Survived' if p == 1 else 'Did not survive' for p in predictions]
+    
     except Exception as e:
         st.error(f"Error during prediction: {e}")
         return []
@@ -48,12 +64,15 @@ if uploaded_file is not None:
             # Encode categorical columns
             df = encode_data(df)
 
-            # Predict and show results (exclude Name and Passenger_ID for prediction)
+            # Add the prediction column
             df['Prediction'] = predict_survival(df)
-            st.write(df[['Name', 'Survival_Status', 'Prediction']])  # Keep Name column for display, not for prediction
+            
+            # Display the result with Name and Survival_Status
+            st.write(df[['Name', 'Survival_Status', 'Prediction']])
 
     except Exception as e:
         st.error(f"Error processing the file: {e}")
+
 
 
 
