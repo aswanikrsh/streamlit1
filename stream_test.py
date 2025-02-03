@@ -16,6 +16,7 @@ def encode_data(df):
 # Predict survival function
 def predict_survival(df):
     try:
+        # Only use relevant columns for prediction
         predictions = model.predict(df[['Age', 'Gender', 'Class', 'Seat_Type', 'Fare_Paid']])
         return ['Survived' if p == 1 else 'Did not survive' for p in predictions]
     except Exception as e:
@@ -47,11 +48,12 @@ if uploaded_file is not None:
             # Encode categorical columns
             df = encode_data(df)
 
-            # Predict and show results
+            # Predict and show results (exclude Name and Passenger_ID for prediction)
             df['Prediction'] = predict_survival(df)
-            st.write(df[['Name', 'Survival_Status', 'Prediction']])
+            st.write(df[['Name', 'Survival_Status', 'Prediction']])  # Keep Name column for display, not for prediction
 
     except Exception as e:
         st.error(f"Error processing the file: {e}")
+
 
 
