@@ -10,6 +10,9 @@ model = pickle.load(open('model.pkl', 'rb'))
 # Load the dataset to preprocess the features (X) and target (y)
 df = pd.read_csv('passenger_survival_dataset.csv')
 
+# Clean column names by stripping any leading/trailing spaces
+df.columns = df.columns.str.strip()
+
 # Create the LabelEncoder object
 encoder = LabelEncoder()
 
@@ -19,7 +22,7 @@ df['Class'] = encoder.fit_transform(df['Class'])
 df['Seat_Type'] = encoder.fit_transform(df['Seat_Type'])
 
 # Define the features (X) and the target (y)
-X = df[['Age', 'Gender', 'Class', 'Seat_Type', 'Fare_Paid','Name',' Passenger_ID']]
+X = df[['Age', 'Gender', 'Class', 'Seat_Type', 'Fare_Paid', 'Name', 'Passenger_ID']]
 y = df['Survival_Status']
 
 # Function to make predictions
@@ -53,4 +56,5 @@ fare_paid = st.number_input('Fare Paid', min_value=0.0, value=10.0)
 if st.button('Predict'):
     result = predict_survival(age, gender, passenger_class, seat_type, fare_paid)
     st.write(f"The passenger is predicted to have: {result}")
+
 
